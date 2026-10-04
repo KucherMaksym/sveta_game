@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Слепой, Глухой, Немой</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Слепой, Глухой, Немой</h1>
+    <div id="room-info" hidden>
+      <span id="room-code"></span>
+      <button id="invite-btn" class="ghost">Скопировать приглашение</button>
+    </div>
+  </header>
+
+  <section id="join" class="card narrow">
+    <h2 id="join-title">Новая игра</h2>
+    <p class="muted" id="join-sub">Создай комнату и отправь ссылку двум друзьям. Понадобятся камера и микрофон.</p>
+    <input id="name" maxlength="20" placeholder="Твоё имя" autocomplete="off">
+    <button id="join-btn">Создать комнату</button>
+    <p id="join-error" class="error"></p>
+  </section>
+
+  <main id="game" hidden>
+    <div id="role-banner" hidden></div>
+    <ol id="steps" hidden>
+      <li data-phase="mime">1. Пантомима</li>
+      <li data-phase="draw">2. Рисунок</li>
+      <li data-phase="guess">3. Угадывание</li>
+    </ol>
+    <div class="layout">
+      <section id="stage" class="card"></section>
+      <aside>
+        <div id="media-status" class="card"></div>
+        <div id="videos"></div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
