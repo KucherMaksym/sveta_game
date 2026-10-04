@@ -1,6 +1,6 @@
-export type Difficulty = 'easy' | 'medium' | 'hard';
+'use strict';
 
-export const WORDS: Record<Difficulty, string[]> = {
+const WORDS = {
   easy: [
     'кот', 'собака', 'самолёт', 'зонт', 'велосипед', 'банан', 'слон', 'гитара', 'дом', 'солнце',
     'рыба', 'машина', 'дерево', 'часы', 'очки', 'корабль', 'змея', 'торт', 'ракета', 'мяч',

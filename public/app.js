@@ -22,7 +22,8 @@ const LINKS = {
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-let ws;
+let peer; // PeerJS: used only as a message channel to the host
+let sendMsg = () => {};
 let myId = null;
 let room = null;
 let localStream = null;
@@ -73,15 +74,73 @@ async function join() {
   }
   addTile('self', 'Ты', localStream, true);
 
-  ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`);
-  ws.onopen = () => ws.send(JSON.stringify({ type: 'join', room: roomParam, name }));
-  ws.onmessage = (e) => onMessage(JSON.parse(e.data));
-  ws.onclose = () => {
-    if (room) $('#stage').innerHTML = '<div class="waiting"><div class="big">🔌</div><h2>Соединение потеряно</h2><p class="muted">Обнови страницу.</p></div>';
-  };
+  if (roomParam) joinAsGuest(roomParam, name);
+  else createAsHost(name);
 }
 
-const sendMsg = (msg) => ws.send(JSON.stringify(msg));
+// ---------- Transport: the host's browser runs the room, guests talk to it over PeerJS ----------
+
+const PEER_PREFIX = 'sgn-game-';
+
+function showDisconnected(text) {
+  $('#stage').innerHTML = `<div class="waiting"><div class="big">🔌</div><h2>Соединение потеряно</h2><p class="muted">${text}</p></div>`;
+}
+
+function onPeerError(err) {
+  const messages = {
+    'peer-unavailable': 'Комната не найдена: возможно, хост закрыл вкладку. Попроси новую ссылку.',
+    network: 'Нет связи с сервером соединений. Проверь интернет и обнови страницу.',
+    'server-error': 'Сервер соединений недоступен. Попробуй ещё раз через минуту.',
+  };
+  const text = messages[err.type] || `Ошибка соединения: ${err.type}`;
+  if (room) showDisconnected(text);
+  else {
+    $('#join-error').textContent = text;
+    $('#join-btn').disabled = false;
+  }
+}
+
+function createAsHost(name) {
+  const code = Math.random().toString(36).slice(2, 8);
+  peer = new Peer(PEER_PREFIX + code);
+  peer.on('error', (err) => {
+    if (err.type === 'unavailable-id') {
+      peer.destroy();
+      createAsHost(name); // code collision, pick another one
+    } else onPeerError(err);
+  });
+  peer.on('open', () => {
+    const host = createHostRoom(code);
+    const me = host.addPlayer(name, (msg) => queueMicrotask(() => onMessage(msg)));
+    sendMsg = (msg) => host.handle(me, msg);
+    peer.on('connection', (conn) => {
+      let player = null;
+      conn.on('data', (msg) => {
+        if (msg.type === 'join' && !player) {
+          player = host.addPlayer(String(msg.name), (m) => conn.open && conn.send(m));
+          if (!player) setTimeout(() => conn.close(), 500);
+        } else if (player) host.handle(player, msg);
+      });
+      conn.on('close', () => player && host.removePlayer(player));
+    });
+  });
+}
+
+function joinAsGuest(code, name) {
+  peer = new Peer();
+  peer.on('error', onPeerError);
+  peer.on('open', () => {
+    const conn = peer.connect(PEER_PREFIX + code, { serialization: 'json', reliable: true });
+    conn.on('open', () => {
+      sendMsg = (msg) => conn.send(msg);
+      sendMsg({ type: 'join', name });
+    });
+    conn.on('data', onMessage);
+    conn.on('close', () => room && showDisconnected('Хост вышел из игры. Чтобы сыграть снова, нужна новая ссылка.'));
+  });
+}
+
+window.addEventListener('beforeunload', () => peer && peer.destroy());
 
 function onMessage(msg) {
   switch (msg.type) {
