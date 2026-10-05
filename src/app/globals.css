@@ -544,14 +544,20 @@ body:has(.page--action) { background: var(--action); }
 }
 
 /* ---------- Конфетти ---------- */
-.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
+.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; --ox: 28%; --oy: 34%; }
+@media (max-width: 820px) { .confetti { --ox: 45%; --oy: 10%; } }
 .confetti i {
   position: absolute;
-  top: -30px;
+  left: var(--ox);
+  top: var(--oy);
   border: 2px solid var(--ink);
-  border-radius: 3px;
-  animation: confetti linear forwards;
+  opacity: 0;
+  animation-name: confetti;
+  animation-fill-mode: both;
 }
+/* Burst out fast and decelerate, then gravity takes over. */
 @keyframes confetti {
-  to { transform: translate(var(--drift), 110vh) rotate(var(--spin)); }
+  0% { opacity: 1; transform: translate(0, 0) rotate(0) scale(.3); animation-timing-function: cubic-bezier(.1, .7, .3, 1); }
+  28% { opacity: 1; transform: translate(var(--x), var(--y)) rotate(calc(var(--spin) * .35)) scale(1); animation-timing-function: cubic-bezier(.4, 0, .9, .6); }
+  100% { opacity: 1; transform: translate(calc(var(--x) + var(--fall)), 110vh) rotate(var(--spin)) scale(1); }
 }
