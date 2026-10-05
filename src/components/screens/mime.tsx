@@ -2,7 +2,7 @@
 
 import { playerByRole } from '@/lib/game/rules';
 import { useGame } from '../game-context';
-import { AudioSink, PlayerTile } from '../ui/media';
+import { PlayerTile } from '../ui/media';
 import { PlayerTag } from '../ui/role';
 import { TopBar } from './shell';
 import { Waiting } from './waiting';
@@ -24,7 +24,6 @@ export function MimeScreen() {
   return (
     <main className="page page--fit">
       <TopBar />
-      <AudioSink />
       <div className="game">
         <PlayerTile of={partner!.id} player={partner} ring={partner!.role} className={`${styles.stage} enter enter-1`}
           placeholder={isMute ? 'камера Глухого' : 'камера Немого — пантомима'} />

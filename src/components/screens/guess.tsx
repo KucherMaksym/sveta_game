@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { playerByRole } from '@/lib/game/rules';
 import { useGame } from '../game-context';
 import { Board } from '../ui/board';
-import { AudioSink, PlayerTile } from '../ui/media';
+import { PlayerTile } from '../ui/media';
 import { TopBar } from './shell';
 import styles from './rounds.module.css';
 
@@ -78,7 +78,6 @@ export function GuessScreen() {
     return (
       <main className="page page--fit">
         <TopBar />
-        <AudioSink />
         <div className="game game--wide-side">
           <div className="col" style={{ gap: 14 }}>
             <Board className="enter enter-1"><div className="sticker bg-blind">Ого, это ты нарисовал?</div></Board>
@@ -103,7 +102,6 @@ export function GuessScreen() {
     return (
       <main className="page page--fit">
         <TopBar />
-        <AudioSink />
         <div className="game game--wide-side">
           <PlayerTile of={mute!.id} player={mute} ring="mute" className={`${styles.stage} enter enter-1`}
             placeholder="камера Немого — смотри, кивает ли он" />
@@ -127,7 +125,6 @@ export function GuessScreen() {
   return (
     <main className="page page--fit">
       <TopBar />
-      <AudioSink />
       <div className="game game--wide-side">
         <div className="col" style={{ gap: 14 }}>
           <Board className="enter enter-1">

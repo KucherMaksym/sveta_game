@@ -12,6 +12,7 @@ import { MimeScreen } from './screens/mime';
 import { ResultScreen } from './screens/result';
 import { RoleReveal } from './screens/reveal';
 import { Connecting, Problem } from './screens/status';
+import { AudioSink } from './ui/media';
 import { GameSounds } from './ui/sounds';
 
 const noop = () => () => {};
@@ -59,6 +60,8 @@ export function Room({ code }: { code: string }) {
   return (
     <GameProvider value={game}>
       <GameSounds revealing={!!revealing} />
+      {/* One sink for the whole room, so voices never drop when the screen changes. */}
+      <AudioSink />
       {revealing ? <RoleReveal />
         : room.phase === 'lobby' ? <Lobby />
         : room.phase === 'mime' ? <MimeScreen />

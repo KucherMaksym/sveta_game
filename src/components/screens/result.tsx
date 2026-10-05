@@ -4,7 +4,6 @@ import { ROLES } from '@/lib/game/rules';
 import { useGame } from '../game-context';
 import { Board } from '../ui/board';
 import { Confetti } from '../ui/confetti';
-import { AudioSink } from '../ui/media';
 import { roleBg } from '../ui/role';
 import styles from './result.module.css';
 
@@ -13,7 +12,6 @@ export function ResultScreen() {
   const last = room.guesses.at(-1);
   return (
     <main className={`page ${room.won ? 'page--action' : 'page--dark'}`}>
-      <AudioSink />
       {room.won && <Confetti />}
       <div className={styles.result}>
         <div className="col" style={{ gap: 24 }}>

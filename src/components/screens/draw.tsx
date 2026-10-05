@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { BRUSHES, playerByRole } from '@/lib/game/rules';
 import { useGame } from '../game-context';
 import { Board, Toolbar } from '../ui/board';
-import { AudioSink, PlayerTile } from '../ui/media';
+import { PlayerTile } from '../ui/media';
 import { PlayerTag } from '../ui/role';
 import { TopBar } from './shell';
 import { Waiting } from './waiting';
@@ -26,7 +26,6 @@ export function DrawScreen() {
   return (
     <main className="page page--fit">
       <TopBar />
-      <AudioSink />
       <div className="game">
         <div className="col" style={{ gap: 16 }}>
           <Board blindfold={isBlind} color={color} brush={brush} className="enter enter-1" />
