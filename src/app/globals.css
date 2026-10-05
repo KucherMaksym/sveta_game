@@ -352,6 +352,25 @@ body:has(.page--action) { background: var(--action); }
 .steps li.now { border-style: solid; border-color: var(--ink); background: var(--ink); color: var(--paper); animation: pop .4s var(--spring); }
 .page--dark .steps li.now { border-color: var(--paper); background: var(--paper); color: var(--ink); }
 
+/* ---------- Звук вкл/выкл ---------- */
+.sound-toggle {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 10px;
+  border: 2px solid currentColor;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform .12s var(--spring);
+}
+.sound-toggle:active { transform: scale(.9); }
+.sound-toggle[aria-pressed='false'] { opacity: .55; }
+
 /* ---------- Сегменты (сложность) ---------- */
 .segmented { display: flex; padding: 5px; border-radius: 16px; border: var(--border); background: var(--card); gap: 4px; }
 .segmented button {

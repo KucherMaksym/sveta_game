@@ -5,6 +5,7 @@ import { ROLES, myChannels } from '@/lib/game/rules';
 import { useGame } from '../game-context';
 import { Steps, Timer } from '../ui/progress';
 import { ChannelStatus, roleBg } from '../ui/role';
+import { SoundToggle } from '../ui/sounds';
 
 /** Logo, my role, my channels, round progress and the phase timer. */
 export function TopBar() {
@@ -15,6 +16,7 @@ export function TopBar() {
         <Link className="logo" href="/" title="Выйти на главную">С·Г·Н</Link>
         {me.role && <span className={`tag ${roleBg(me.role)}`}>ты · {ROLES[me.role].title}</span>}
         <ChannelStatus channels={myChannels(room, me.id)} />
+        <SoundToggle />
       </div>
       <Steps phase={room.phase} />
       {room.phaseEndsAt && <Timer endsAt={room.phaseEndsAt} offset={snap.clockOffset} />}

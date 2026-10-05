@@ -6,6 +6,7 @@ import { DIFFICULTY } from '@/lib/game/rules';
 import type { Difficulty } from '@/lib/game/types';
 import { useGame } from '../game-context';
 import { PlayerTile } from '../ui/media';
+import { SoundToggle } from '../ui/sounds';
 import styles from './lobby.module.css';
 
 export function Lobby() {
@@ -29,7 +30,10 @@ export function Lobby() {
     <main className={`page ${styles.page}`}>
       <div className="topbar enter">
         <Link className="logo" href="/">С·Г·Н</Link>
-        {room.round > 0 && <span className="t-small">Сыграно раундов: {room.round}</span>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          {room.round > 0 && <span className="t-small">Сыграно раундов: {room.round}</span>}
+          <SoundToggle />
+        </div>
       </div>
 
       <div className={`${styles.invite} enter enter-1`}>

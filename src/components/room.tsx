@@ -2,6 +2,7 @@
 
 import { useEffect, useReducer, useState, useSyncExternalStore } from 'react';
 import { closeSession, getSession, openSession, type GameSession } from '@/lib/net/session';
+import { unlockSounds } from '@/lib/sound';
 import { GameProvider } from './game-context';
 import { DrawScreen } from './screens/draw';
 import { GuessScreen } from './screens/guess';
@@ -11,6 +12,7 @@ import { MimeScreen } from './screens/mime';
 import { ResultScreen } from './screens/result';
 import { RoleReveal } from './screens/reveal';
 import { Connecting, Problem } from './screens/status';
+import { GameSounds } from './ui/sounds';
 
 const noop = () => () => {};
 const none = () => null;
@@ -33,7 +35,10 @@ export function Room({ code }: { code: string }) {
   }, [revealEndsAt, offset]);
 
   if (!session || !snap) {
-    return <JoinScreen invite={code} onJoin={(name) => setSession(openSession(code, name, false))} />;
+    return <JoinScreen invite={code} onJoin={(name) => {
+      unlockSounds();
+      setSession(openSession(code, name, false));
+    }} />;
   }
 
   if (snap.status === 'failed' || snap.status === 'disconnected') {
@@ -53,6 +58,7 @@ export function Room({ code }: { code: string }) {
 
   return (
     <GameProvider value={game}>
+      <GameSounds revealing={!!revealing} />
       {revealing ? <RoleReveal />
         : room.phase === 'lobby' ? <Lobby />
         : room.phase === 'mime' ? <MimeScreen />
