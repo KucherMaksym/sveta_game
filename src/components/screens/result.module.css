@@ -1,0 +1,27 @@
+.result { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; padding: 20px 24px; max-width: 1200px; margin: auto; width: 100%; }
+.title { color: var(--card); text-shadow: 6px 6px 0 var(--ink); transform: rotate(-4deg); animation: stamp .7s var(--spring) both; }
+.card { padding: 20px; gap: 14px; }
+.card hr { border: 0; height: 2px; background: #e3dccf; margin: 0; width: 100%; }
+.line { display: flex; flex-direction: column; gap: 4px; }
+.line b { font-family: var(--font-display); font-weight: 700; font-size: 22px; }
+.verdict { font-size: 13px; padding: 6px 12px; align-self: flex-start; animation: pop .45s var(--spring) .7s backwards; }
+.actions { display: flex; gap: 14px; flex-wrap: wrap; }
+.note { color: var(--card); font-weight: 700; font-size: 14px; }
+.drawing { flex: none; min-height: 0; container-type: normal; transform: rotate(2deg); }
+.drawing :global(.board) { width: 100%; }
+.scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.scores > div { padding: 12px; border-radius: 14px; border: var(--border); font-weight: 800; font-size: 14px; display: flex; flex-direction: column; gap: 2px; }
+.scores span { font-family: var(--font-mono); font-size: 11px; }
+
+@keyframes stamp {
+  0% { opacity: 0; transform: rotate(-14deg) scale(2.2); }
+  60% { opacity: 1; transform: rotate(-2deg) scale(.95); }
+  100% { transform: rotate(-4deg) scale(1); }
+}
+
+@media (max-width: 820px) {
+  .result { grid-template-columns: 1fr; padding: 24px 0 0; gap: 28px; }
+  .title { text-shadow: 4px 4px 0 var(--ink); }
+  .line b { font-size: 18px; }
+  .actions button { flex: 1; }
+}

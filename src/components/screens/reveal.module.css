@@ -1,0 +1,58 @@
+.page { gap: 36px; padding: 48px; overflow: hidden; }
+.title { font-size: 20px; animation: blink 1.2s ease-in-out 2; }
+.deck { display: flex; align-items: center; gap: 32px; perspective: 1200px; }
+
+.ghost {
+  width: 200px; height: 270px; border-radius: 20px; border: 3px solid var(--paper); opacity: .55;
+  display: flex; align-items: flex-end; padding: 16px; color: var(--ink);
+  font-family: var(--font-display); font-weight: 900; font-size: 20px;
+}
+.left { --r: -8deg; transform: rotate(var(--r)); animation: deal .6s var(--spring) .15s backwards; --from: 260px; }
+.right { --r: 7deg; transform: rotate(var(--r)); animation: deal .6s var(--spring) .3s backwards; --from: -260px; }
+
+/* My card: lands face down, then flips. */
+.flip { position: relative; width: 340px; transform-style: preserve-3d; animation: flip 1s var(--spring) .55s backwards; transform: rotate(-1deg); }
+.card { backface-visibility: hidden; }
+.back {
+  position: absolute; inset: 0; border-radius: 24px; border: 3px solid var(--paper);
+  background: var(--action) radial-gradient(#ffffff33 1.5px, transparent 1.5px) 0 0 / 16px 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 900; font-size: 96px; color: var(--paper);
+  transform: rotateY(180deg); backface-visibility: hidden;
+}
+
+.reveal { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: center; animation: rise .5s var(--spring) 1.4s backwards; }
+.secret { padding: 16px 22px; border-radius: 16px; border: 3px dashed var(--paper); display: flex; flex-direction: column; gap: 4px; }
+.secret b { font-family: var(--font-display); font-weight: 700; font-size: 22px; }
+
+.countdown {
+  display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 14px; row-gap: 10px;
+  padding: 12px 20px; border-radius: 16px; border: 3px solid var(--paper); background: var(--action);
+  box-shadow: 4px 4px 0 var(--paper); color: #fff;
+}
+.countdown b {
+  font-family: var(--font-display); font-weight: 900; font-size: 44px; line-height: 1; min-width: 1.2em; text-align: center;
+  font-variant-numeric: tabular-nums; animation: count .45s var(--spring);
+}
+.countdown b.hot { color: var(--blind); }
+.bar { grid-column: 1 / -1; height: 10px; border-radius: 999px; border: 2px solid var(--paper); overflow: hidden; }
+.bar div { height: 100%; background: var(--blind); transform-origin: left; animation: drain linear both; }
+
+@keyframes count { from { opacity: 0; transform: scale(1.8) rotate(-10deg); } }
+@keyframes drain { to { transform: scaleX(0); } }
+@keyframes deal { from { opacity: 0; transform: translateX(var(--from)) rotate(0deg) scale(.8); } }
+@keyframes flip {
+  0% { opacity: 0; transform: translateY(-120px) rotateY(180deg) rotate(-8deg); }
+  35% { opacity: 1; transform: translateY(0) rotateY(180deg) rotate(-1deg); }
+  100% { transform: rotateY(0) rotate(-1deg); }
+}
+
+@media (max-width: 820px) {
+  .page { padding: 32px 22px; gap: 22px; }
+  .ghost { display: none; }
+  .deck { width: 100%; }
+  .flip { width: 100%; }
+  .card { box-shadow: 6px 6px 0 var(--paper); }
+  .reveal { width: 100%; flex-direction: column; align-items: stretch; }
+  .secret b { font-size: 18px; }
+}

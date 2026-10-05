@@ -1,0 +1,29 @@
+.page { padding: 40px 56px; gap: 28px; }
+.invite { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.players { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.player { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; }
+.empty .row { color: var(--muted-text); }
+.bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; gap: 24px; flex-wrap: wrap; }
+.bottom > div { display: flex; flex-direction: column; gap: 10px; }
+.start { align-items: flex-end; text-align: right; }
+.short { display: none; }
+
+@media (max-width: 820px) {
+  .page { padding: 32px 16px; gap: 18px; }
+  .invite { gap: 10px; }
+  .invite h1 { width: 100%; }
+  .invite button { flex: 1; }
+  .players { grid-template-columns: 1fr; gap: 10px; }
+  .player { flex-direction: row; align-items: center; gap: 12px; padding: 10px; border-radius: 16px; border: var(--border); background: var(--card); }
+  .player.empty { border-style: dashed; border-color: var(--muted-line); background: var(--muted-bg); }
+  .player :global(.tile) { width: 56px; height: 56px; aspect-ratio: auto; border-width: 2px; border-radius: 12px; flex: none; }
+  .player :global(.tile) > :not(video):not(.q) { display: none; }
+  .player :global(.tile--empty .q) { font-size: 22px; }
+  .row { flex: 1; font-size: 16px; }
+  .bottom { flex-direction: column; align-items: stretch; }
+  .start { align-items: stretch; text-align: left; }
+  .bottom :global(.segmented button) { padding: 10px 4px; font-size: 13px; }
+  .long { display: none; }
+  .short { display: inline; }
+}
