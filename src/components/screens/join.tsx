@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { authClient } from '@/lib/auth-client';
 import { parseRoomCode } from '@/lib/net/room-code';
+import { AccountLink } from '../ui/account';
 import styles from './join.module.css';
 
 const NAME_KEY = 'sgn-name';
@@ -15,12 +17,18 @@ export function JoinScreen({ invite, onCreate, onJoin }: Props) {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
+  const accountName = authClient.useSession().data?.user.name;
 
   useEffect(() => {
     try {
       setName(localStorage.getItem(NAME_KEY) ?? '');
     } catch {}
   }, []);
+
+  // A signed-in player with no name typed yet plays under their account name.
+  useEffect(() => {
+    if (accountName) setName((n) => n || accountName.slice(0, 20));
+  }, [accountName]);
 
   function withName(fn: (name: string) => void) {
     const n = name.trim();
@@ -43,6 +51,10 @@ export function JoinScreen({ invite, onCreate, onJoin }: Props) {
 
   return (
     <main className="page">
+      <header className={`topbar ${styles.top} enter`}>
+        <span className="logo">С·Г·Н</span>
+        <AccountLink next={invite ? `/room/${invite}` : undefined} />
+      </header>
       <div className={styles.home}>
         <div className={styles.hero}>
           <h1 className={styles.titleStack} aria-label="Слепой, Глухой, Немой">

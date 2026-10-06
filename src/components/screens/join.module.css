@@ -16,6 +16,7 @@
 .card { padding: 36px; box-shadow: 8px 8px 0 var(--ink); border-radius: 24px; }
 .joinRow { display: flex; gap: 10px; }
 .invite { display: flex; align-items: center; gap: 16px; font-weight: 800; }
+.top { max-width: 1200px; width: 100%; margin: 0 auto; padding: 0 24px; }
 
 @keyframes drop {
   from { opacity: 0; transform: translateY(-80px) rotate(calc(var(--r) * 6)); }
@@ -29,4 +30,5 @@
   .titleStack span:nth-child(3) { --m: 12px; }
   .hero p { font-size: 16px; }
   .card { padding: 22px; }
+  .top { padding: 0 6px; }
 }

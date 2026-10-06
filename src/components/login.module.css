@@ -1,0 +1,7 @@
+.wrap { flex: 1; display: flex; align-items: center; justify-content: center; }
+.card { width: 100%; max-width: 440px; padding: 32px; gap: 16px; box-shadow: 8px 8px 0 var(--ink); border-radius: 24px; }
+.links { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 820px) {
+  .card { padding: 22px; }
+}

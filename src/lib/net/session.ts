@@ -2,6 +2,7 @@ import type { DataConnection, Peer as PeerJS, PeerError } from 'peerjs';
 import { createHostRoom } from '@/lib/game/host-room';
 import { inRound, roleOf } from '@/lib/game/rules';
 import type { ClientMessage, RoomState, Segment, ServerMessage } from '@/lib/game/types';
+import { logEvent } from '@/lib/log';
 import { Mesh } from './mesh';
 import { peerIdFor } from './room-code';
 
@@ -97,6 +98,11 @@ export class GameSession {
       () => this.set({ remote: this.mesh!.streams() }),
     );
     this.set({ local, noMedia: local.getTracks().length === 0 });
+    logEvent('join', this.name, this.snapshot.code, {
+      host: this.snapshot.isHost,
+      video: local.getVideoTracks().length > 0,
+      audio: local.getAudioTracks().length > 0,
+    });
 
     const { Peer } = await import('peerjs'); // browser-only library
     if (this.destroyed) return;
@@ -116,6 +122,7 @@ export class GameSession {
   private fail(err: PeerError<string> | { type: string }) {
     const error = PEER_ERRORS[err.type] ?? `Ошибка соединения: ${err.type}`;
     this.set({ status: this.snapshot.room ? 'disconnected' : 'failed', error });
+    logEvent('error', this.name, this.snapshot.code, { type: err.type, inRoom: !!this.snapshot.room });
   }
 
   private startAsHost(Peer: typeof PeerJS) {

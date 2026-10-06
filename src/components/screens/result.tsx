@@ -1,15 +1,66 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { authClient } from '@/lib/auth-client';
 import { ROLES } from '@/lib/game/rules';
+import { logEvent } from '@/lib/log';
 import { useGame } from '../game-context';
 import { Board } from '../ui/board';
 import { Confetti } from '../ui/confetti';
 import { roleBg } from '../ui/role';
 import styles from './result.module.css';
 
+/** Saves the finished round to a signed-in player's history. Guests play without it. */
+function useRecordRound() {
+  const { room, me } = useGame();
+  const { data: account, isPending } = authClient.useSession();
+  const [saved, setSaved] = useState(false);
+  const userId = account?.user.id;
+
+  // Every player, guest or not, logs the round once.
+  useEffect(() => {
+    if (!room.revealEndsAt) return;
+    logEvent('round', me.name, room.id, {
+      roundId: room.revealEndsAt,
+      role: me.role,
+      difficulty: room.difficulty,
+      secret: room.secret,
+      won: room.won,
+      guesses: room.guesses,
+      questions: room.answers.length,
+      team: room.players.map((p) => ({ name: p.name, role: p.role })),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [room.revealEndsAt]);
+
+  useEffect(() => {
+    if (!userId || !me.role || !room.revealEndsAt || !room.secret) return;
+    fetch('/api/games', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        room: room.id,
+        roundId: room.revealEndsAt,
+        role: me.role,
+        difficulty: room.difficulty,
+        secret: room.secret,
+        won: room.won,
+        guess: room.guesses.at(-1) ?? null,
+        questions: room.answers.length,
+        team: room.players.map((p) => ({ name: p.name, role: p.role })),
+      }),
+    }).then((r) => setSaved(r.ok), () => {});
+    // One request per round; the server ignores repeats anyway.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, room.revealEndsAt]);
+
+  return isPending ? null : saved ? 'saved' : userId ? null : 'guest';
+}
+
 export function ResultScreen() {
   const { session, room, isHost } = useGame();
   const last = room.guesses.at(-1);
+  const record = useRecordRound();
   return (
     <main className={`page ${room.won ? 'page--action' : 'page--dark'}`}>
       {room.won && <Confetti />}
@@ -37,6 +88,12 @@ export function ResultScreen() {
             <div className={`${styles.note} enter enter-3`}>Хост решает, играть ли ещё раунд</div>
           )}
           <div className={`${styles.note} enter enter-4`}>В новом раунде роли перемешаются</div>
+          {record === 'saved' && <div className={`${styles.note} pop`}>Раунд записан в <a className="link" href="/profile" target="_blank">твою историю</a></div>}
+          {record === 'guest' && (
+            <div className={`${styles.note} pop`}>
+              Ты играешь как гость. <a className="link" href="/login?next=/profile" target="_blank">Войди</a>, чтобы копить статистику
+            </div>
+          )}
         </div>
         <div className="col" style={{ gap: 20 }}>
           <Board className={`${styles.drawing} enter enter-2`} />

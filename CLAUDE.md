@@ -42,7 +42,7 @@
 
 ## Проект
 
-Next.js 16 (App Router, TypeScript), деплой на Vercel. Бэкенда нет.
+Next.js 16 (App Router, TypeScript), деплой на Vercel. Сама игра идёт без сервера, сервер нужен только для аккаунтов и истории (см. ниже).
 
 **Сеть.** Браузер хоста — сервер комнаты (`src/lib/game/host-room.ts`): хранит состояние, раздаёт роли, проверяет ходы. Гости шлют ему сообщения через PeerJS (публичный сигнальный сервер PeerJS). Видео и звук идут напрямую по WebRTC mesh (`src/lib/net/mesh.ts`), каждый поток уходит всем. Кто кого видит и слышит, решают правила `LINKS` в `src/lib/game/rules.ts` в момент воспроизведения. Если хост закрывает вкладку, комната пропадает.
 
@@ -51,10 +51,24 @@ Next.js 16 (App Router, TypeScript), деплой на Vercel. Бэкенда н
 - `src/lib/net/`: `GameSession` (одно подключение к комнате, живёт вне React, подписка через `useSyncExternalStore`), WebRTC mesh, коды комнат вида `ABCD-12`.
 - `src/components/screens/`: экраны (главная/вход, лобби, раздача ролей, ходы 1–3, ожидание, итог). `src/components/ui/`: роли, видео-плитки, доска, таймер.
 - `src/app/globals.css`: дизайн-система из Claude Design (проект `17afaf9c-74c9-4d12-a3b8-78bd941e94fd`, файл `Слепой Глухой Немой.dc.html`). Цвета ролей: Немой коралловый, Глухой бирюзовый, Слепой жёлтый. Фиолетовый только для главного действия. Все блоки с обводкой 3px и жёсткой тенью без размытия.
-- Маршруты: `/` и `/room/[code]` (ссылка-приглашение).
+- Маршруты: `/` и `/room/[code]` (ссылка-приглашение), `/login`, `/profile` (статистика и история).
+
+**Аккаунты** необязательны: гость играет как раньше. Better Auth (`src/lib/server/auth.ts`) хранит пользователей и сессии в Postgres (Neon из Vercel Marketplace). Вход по почте с паролем и через Google; Google включается, только если заданы `GOOGLE_CLIENT_ID` и `GOOGLE_CLIENT_SECRET`. На экране итога каждый вошедший игрок сам отправляет свой раунд в `POST /api/games`. Ключ `(user_id, room, round_id)`, где `round_id` равен `revealEndsAt` хоста, поэтому повтор не создаёт дубль. Данные присылает браузер игрока, так что статистика держится на доверии. Таблицы создаёт `npm run db:migrate` (`scripts/migrate.mts`). Переменные окружения: `DATABASE_URL`, `BETTER_AUTH_SECRET` и необязательные `GOOGLE_*`.
+
+**Логи** для анализа пишутся в таблицу `event_log` у всех, гостей тоже. Клиент (`src/lib/log.ts`) шлёт в `POST /api/log` события `join` (вход в комнату), `error` (ошибка соединения) и `round` (итог раунда) с именем, комнатой, случайным `device_id` из `localStorage`, языком, часовым поясом и экраном. Сервер (`src/lib/server/logs.ts`) добавляет IP, user agent, `user_id`, если игрок вошёл, и примерную локацию по IP из заголовков Vercel `x-vercel-ip-*` (локально её нет).
 
 **Время.** Все отсчёты задаёт хост метками своих часов (`revealEndsAt`, `phaseEndsAt` в `RoomState`). Каждое сообщение `state` несёт `now` хоста, и клиент держит поправку `clockOffset`, поэтому таймеры совпадают, даже если часы на устройствах сбиты. После раздачи ролей идёт общий отсчёт `REVEAL_SECONDS`, и ход 1 начинается у всех одновременно, без кнопки.
 
 **Доска** всегда `BOARD_RATIO` (4:3) и вписывается в отведённое место. Координаты штрихов хранятся в долях (0..1), толщина считается относительно ширины доски.
 
 **Отступления от правил с картинок.** Таймер ходов только визуальный, игру он не двигает. В ходе 3 Глухой отмечает ответы «да/нет» кнопками, Немой может засчитать почти верную догадку.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
