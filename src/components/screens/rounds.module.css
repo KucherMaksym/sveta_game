@@ -1,15 +1,19 @@
-.stage { min-height: 260px; aspect-ratio: auto; border-radius: 22px; }
+/* The main camera stays 16:9 at the top of its cell; on very wide screens it is capped by the page height. */
+.stage { align-self: start; max-height: 100%; border-radius: 22px; }
 .stage:global(.tile--ring-mute) { box-shadow: 0 0 0 6px var(--mute), 6px 6px 0 6px var(--ink); }
 .stage:global(.tile--ring-deaf) { box-shadow: 0 0 0 6px var(--deaf), 6px 6px 0 6px var(--ink); }
 .stage :global(.tile__label) { left: 16px; bottom: 16px; font-size: 16px; border-width: 3px; padding: 8px 14px; border-radius: 12px; }
 .stage :global(.tile__placeholder) { font-size: 14px; }
 
+/* Picture-in-picture self view inside a partner's tile. */
+.pip:global(.tile) { position: absolute; top: 10px; right: 10px; z-index: 2; width: 32%; min-width: 96px; border-width: 2px; border-radius: 12px; box-shadow: 3px 3px 0 var(--ink); }
+.stage .pip { top: 16px; right: 16px; }
+.pip :global(.tile__label) { left: 6px; bottom: 6px; font-size: 11px; padding: 2px 6px; border-width: 2px; }
+.pip :global(.tile__placeholder) { font-size: 10px; padding: 4px; }
+
 .flow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 800; font-size: 14px; }
 .flow :global(.tag) { font-size: 14px; }
 
-.answers { flex: 1; min-height: 140px; }
-.yesno { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.yesno button { font-size: 22px; padding: 22px 10px; }
 .answerRow { display: flex; flex-direction: column; gap: 10px; }
 .guessForm { box-shadow: 5px 5px 0 var(--ink); }
 .miniBoard { flex: none; min-height: 0; container-type: normal; }
@@ -24,7 +28,6 @@
 .dots::after { content: '…'; animation: blink 1s steps(2) infinite; }
 
 @media (max-width: 820px) {
-  .stage { aspect-ratio: 3 / 4; }
   .flow { display: none; }
   .answerRow { flex-direction: row; }
   .answerRow :global(.input) { font-size: 15px; padding: 13px; }

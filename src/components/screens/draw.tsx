@@ -7,9 +7,8 @@ import { Board, Toolbar } from '../ui/board';
 import { PlayerTile } from '../ui/media';
 import { PlayerTag } from '../ui/role';
 import { TopBar } from './shell';
-import { Waiting } from './waiting';
 
-/** Turn 2: the deaf describes in words, the blind draws without seeing. The mute waits. */
+/** Turn 2: the deaf describes in words, the blind draws without seeing. The mute silently watches the blind. */
 export function DrawScreen() {
   const { session, room, me } = useGame();
   const [color, setColor] = useState(0);
@@ -19,7 +18,24 @@ export function DrawScreen() {
   const mute = playerByRole(room, 'mute');
 
   if (me.role === 'mute') {
-    return <Waiting pair={['deaf', 'blind']} text="Глухой объясняет Слепому, что рисовать. Отдыхай — скоро будешь кивать." />;
+    return (
+      <main className="page page--fit">
+        <TopBar />
+        <div className="game">
+          <Board className="enter enter-1" />
+          <div className="col">
+            <PlayerTile of={blind!.id} player={blind} ring="blind" className="enter enter-2" placeholder="камера Слепого" />
+            <div className="waiting enter enter-3">
+              <PlayerTag player={deaf} />
+              Объясняет Слепому, что рисовать. Ты их не слышишь
+            </div>
+            <div className="hint bg-mute push-down enter enter-4">
+              Смотри, как Слепой рисует. Скоро твой ход: будешь кивать или мотать головой.
+            </div>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   const isBlind = me.role === 'blind';
@@ -47,7 +63,7 @@ export function DrawScreen() {
           )}
           <div className="waiting enter enter-3">
             <PlayerTag player={mute} />
-            Ждёт в коридоре
+            {isBlind ? 'Молча смотрит, как ты рисуешь' : 'Молча смотрит, как рисует Слепой'}
           </div>
           <div className={`hint bg-${me.role} push-down enter enter-4`}>
             {isBlind

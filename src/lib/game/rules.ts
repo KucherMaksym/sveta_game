@@ -1,4 +1,4 @@
-import type { Difficulty, Phase, Role, RoomState } from './types';
+import type { Difficulty, Level, Phase, Role, RoomState } from './types';
 
 export const ROLES: Record<Role, { title: string; letter: string; about: string; reveal: string; off: Channel }> = {
   mute: {
@@ -27,10 +27,16 @@ export const ROLES: Record<Role, { title: string; letter: string; about: string;
 export type Channel = 'camera' | 'mic' | 'sound';
 export const CHANNEL_LABEL: Record<Channel, string> = { camera: 'камера', mic: 'микро', sound: 'звук' };
 
-export const DIFFICULTY: Record<Difficulty, { label: string; short: string; example: string }> = {
-  easy: { label: 'Слово', short: 'Слово', example: '«велосипед»' },
-  medium: { label: 'Словосочетание', short: 'Фраза', example: '«лысый дракон»' },
-  hard: { label: 'Предложение', short: 'Предлож.', example: '«инопланетянин ворует корову»' },
+export const DIFFICULTY: Record<Difficulty, { label: string; short: string }> = {
+  easy: { label: 'Слово', short: 'Слово' },
+  medium: { label: 'Словосочетание', short: 'Фраза' },
+  hard: { label: 'Предложение', short: 'Предлож.' },
+};
+
+export const LEVEL: Record<Level, { label: string; about: string }> = {
+  normal: { label: 'Лёгкая', about: 'обычные вещи' },
+  weird: { label: 'Средняя', about: 'слегка дичь' },
+  insane: { label: 'Сложная', about: 'лютая дичь' },
 };
 
 export const STEPS = [
@@ -60,7 +66,8 @@ const LINKS: Record<Phase, '*' | [Role, Role, Kind][]> = {
   lobby: '*',
   result: '*',
   mime: [['mute', 'deaf', 'video'], ['deaf', 'mute', 'video'], ['deaf', 'mute', 'audio']],
-  draw: [['deaf', 'blind', 'audio']],
+  // The mute only watches the blind draw: no sound either way.
+  draw: [['deaf', 'blind', 'audio'], ['blind', 'mute', 'video']],
   guess: [
     ['blind', 'mute', 'audio'], ['mute', 'deaf', 'video'], ['deaf', 'blind', 'audio'],
     ['deaf', 'mute', 'audio'], ['deaf', 'mute', 'video'],

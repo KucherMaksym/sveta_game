@@ -1,5 +1,5 @@
 import { BRUSHES, PALETTE, PHASE_SECONDS, REVEAL_SECONDS, normalize } from './rules';
-import type { ClientMessage, Difficulty, Phase, Role, RoomState, Segment, ServerMessage } from './types';
+import type { ClientMessage, Difficulty, Level, Phase, Role, RoomState, Segment, ServerMessage } from './types';
 import { WORDS } from './words';
 
 type Player = { id: string; name: string; role: Role | null; score: number; send: (msg: ServerMessage) => void };
@@ -14,6 +14,7 @@ export function createHostRoom(id: string) {
   let players: Player[] = [];
   let hostId = '';
   let difficulty: Difficulty = 'easy';
+  let level: Level = 'normal';
   let phase: Phase = 'lobby';
   let round = 0;
   let secret = '';
@@ -42,6 +43,7 @@ export function createHostRoom(id: string) {
           id,
           hostId,
           difficulty,
+          level,
           phase,
           round,
           players: players.map(({ id, name, role, score }) => ({ id, name, role, score })),
@@ -62,9 +64,14 @@ export function createHostRoom(id: string) {
   }
 
   function startRound() {
-    const roles: Role[] = ['mute', 'deaf', 'blind'].sort(() => Math.random() - 0.5) as Role[];
+    // Fisher–Yates: every one of the 6 role layouts is equally likely.
+    const roles: Role[] = ['mute', 'deaf', 'blind'];
+    for (let i = roles.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [roles[i], roles[j]] = [roles[j], roles[i]];
+    }
     players.forEach((p, i) => (p.role = roles[i]));
-    const list = WORDS[difficulty];
+    const list = WORDS[level][difficulty];
     secret = list[Math.floor(Math.random() * list.length)];
     strokes = [];
     answers = [];
@@ -134,8 +141,14 @@ export function createHostRoom(id: string) {
           players.find((p) => p.id === msg.to)?.send({ type: 'signal', from: me.id, data: msg.data });
           break;
         case 'difficulty':
-          if (isHost && phase === 'lobby' && msg.value in WORDS) {
+          if (isHost && phase === 'lobby' && msg.value in WORDS.normal) {
             difficulty = msg.value;
+            broadcastState();
+          }
+          break;
+        case 'level':
+          if (isHost && phase === 'lobby' && msg.value in WORDS) {
+            level = msg.value;
             broadcastState();
           }
           break;
