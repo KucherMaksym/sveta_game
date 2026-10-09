@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { DIFFICULTY } from '@/lib/game/rules';
-import type { Difficulty } from '@/lib/game/types';
+import { DIFFICULTY, LEVEL } from '@/lib/game/rules';
+import type { Difficulty, Level } from '@/lib/game/types';
+import { WORDS } from '@/lib/game/words';
 import { useGame } from '../game-context';
 import { PlayerTile } from '../ui/media';
 import { SoundToggle } from '../ui/sounds';
@@ -66,7 +67,7 @@ export function Lobby() {
 
       <div className={`${styles.bottom} enter enter-3`}>
         <div>
-          <div className="field"><label>Сложность загадки</label></div>
+          <div className="field"><label>Что загадываем</label></div>
           <div className="segmented">
             {(Object.keys(DIFFICULTY) as Difficulty[]).map((d) => (
               <button key={d} aria-pressed={room.difficulty === d} disabled={!isHost}
@@ -76,7 +77,16 @@ export function Lobby() {
               </button>
             ))}
           </div>
-          <div className="t-small">например: {DIFFICULTY[room.difficulty].example}</div>
+          <div className="field" style={{ marginTop: 8 }}><label>Сложность</label></div>
+          <div className="segmented">
+            {(Object.keys(LEVEL) as Level[]).map((l) => (
+              <button key={l} aria-pressed={room.level === l} disabled={!isHost}
+                onClick={() => session.send({ type: 'level', value: l })}>
+                {LEVEL[l].label}
+              </button>
+            ))}
+          </div>
+          <div className="t-small">{LEVEL[room.level].about}, например: «{WORDS[room.level][room.difficulty][0]}»</div>
         </div>
         <div className={styles.start}>
           {isHost ? (

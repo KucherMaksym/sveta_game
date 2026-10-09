@@ -1,6 +1,9 @@
 export type Role = 'mute' | 'deaf' | 'blind';
 export type Phase = 'lobby' | 'mime' | 'draw' | 'guess' | 'result';
+/** The secret's format: a word, a phrase or a sentence. */
 export type Difficulty = 'easy' | 'medium' | 'hard';
+/** How wild the secret is, independent of its format. */
+export type Level = 'normal' | 'weird' | 'insane';
 export type Answer = 'yes' | 'no';
 
 export type PublicPlayer = { id: string; name: string; role: Role | null; score: number };
@@ -10,6 +13,7 @@ export type RoomState = {
   id: string;
   hostId: string;
   difficulty: Difficulty;
+  level: Level;
   phase: Phase;
   round: number;
   players: PublicPlayer[];
@@ -31,6 +35,7 @@ export type ClientMessage =
   | { type: 'join'; name: string }
   | { type: 'signal'; to: string; data: SignalData }
   | { type: 'difficulty'; value: Difficulty }
+  | { type: 'level'; value: Level }
   | { type: 'start' }
   | { type: 'lobby' }
   | { type: 'next' }

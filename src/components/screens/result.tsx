@@ -24,6 +24,7 @@ function useRecordRound() {
       roundId: room.revealEndsAt,
       role: me.role,
       difficulty: room.difficulty,
+      level: room.level,
       secret: room.secret,
       won: room.won,
       guesses: room.guesses,
